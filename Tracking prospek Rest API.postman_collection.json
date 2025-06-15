@@ -1,0 +1,965 @@
+{
+	"info": {
+		"_postman_id": "a7a7a568-fe34-439b-a241-ebdf2571a212",
+		"name": "Tracking prospek Rest API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40066467"
+	},
+	"item": [
+		{
+			"name": "login user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjAxODk4ZGRhYjM5ZjE3ZjBiOTVlZiIsImxldmVsIjoic2FsZXMiLCJpYXQiOjE3NDEyMjUwMDEsImV4cCI6MTc0MTMxMTQwMX0.OV8ZoH0AskEvqrbOyEPePpmdiOu2pwLCbcOH5PIpY8Q",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"andre\", \"password\":\"andre\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/users/login",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				},
+				"description": "user login"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Porpek data",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjAxODk4ZGRhYjM5ZjE3ZjBiOTVlZiIsImxldmVsIjoic2FsZXMiLCJpYXQiOjE3NDEyMjUwMDEsImV4cCI6MTc0MTMxMTQwMX0.OV8ZoH0AskEvqrbOyEPePpmdiOu2pwLCbcOH5PIpY8Q",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n    \"name\": \"Tendo\",\r\n    \"date\": \"2025-03-06\",\r\n    \"whatsappNum\": \"08973463622\",\r\n    \"address\": \"Banjarmasin\",\r\n    \"source\": \"Instagram\",\r\n    \"status\": \"Prospek\",\r\n    \"carType\": \"mazda-CX3\"    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/prospek/",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"prospek",
+						""
+					]
+				},
+				"description": "### Add New Prospek\n\nThis endpoint allows the user to add a new prospek by sending a POST request to the specified URL. The request should include the following parameters in the raw request body:\n\n- `name` (string): The name of the prospek.\n    \n- `date` (string): The date associated with the prospek.\n    \n- `whatsappNum` (string): The WhatsApp number of the prospek.\n    \n- `address` (string): The address of the prospek.\n    \n- `source` (string): The source through which the prospek was obtained.\n    \n- `status` (string): The status of the prospek.\n    \n- `carType` (string): The type of car associated with the prospek.\n    \n\n#### Request Body\n\n``` json\n{\n    \"name\": \"Tendo\",\n    \"date\": \"2025-03-06\",\n    \"whatsappNum\": \"08973463622\",\n    \"address\": \"Banjarmasin\",\n    \"source\": \"Instagram\",\n    \"status\": \"Prospek\",\n    \"carType\": \"mazda-CX3\"\n}\n\n ```\n\n#### Response\n\nUpon successful execution, the endpoint returns a status code of 201 and a JSON response with the following structure:\n\n``` json\n{\n    \"message\": \"\",\n    \"data\": {\n        \"salesId\": \"\",\n        \"name\": \"\",\n        \"date\": \"\",\n        \"whatsappNum\": \"\",\n        \"address\": \"\",\n        \"source\": \"\",\n        \"status\": \"\",\n        \"carType\": \"\",\n        \"id\": \"\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "get data prospek",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/prospek/",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"prospek",
+						""
+					]
+				},
+				"description": "mengambil semua data prospek"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data Prospek by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/prospek/67bd366732fb6ca397f75bfc",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"prospek",
+						"67bd366732fb6ca397f75bfc"
+					]
+				},
+				"description": "mengambil data prospek berdasarkan id"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Prospek Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{    \r\n    \"name\": \"Andre update\",\r\n    \"date\": \"2025-03-01T00:00:00.000Z\",\r\n    \"whatsappNum\": \"89898876\",\r\n    \"address\": \"Banjarbaru\",\r\n    \"source\": \"Instagram\",\r\n    \"status\": \"Prospek\",\r\n    \"carType\": \"Mazda CX-5\",\r\n    \"id\": \"67c2cc75ffbebe4f1eb86dbe\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/prospek/67c2cc75ffbebe4f1eb86dbe",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"prospek",
+						"67c2cc75ffbebe4f1eb86dbe"
+					]
+				},
+				"description": "### Update Prospek Data\n\nThis endpoint is used to update prospect data.\n\n#### Request Body\n\n- Type: JSON\n    \n    - `name`: (string) Updated name of the prospect\n        \n    - `date`: (string) Updated date\n        \n    - `whatsappNum`: (string) Updated WhatsApp number\n        \n    - `address`: (string) Updated address\n        \n    - `source`: (string) Updated source of the prospect\n        \n    - `status`: (string) Updated status of the prospect\n        \n    - `carType`: (string) Updated car type\n        \n    - `id`: (string) Prospect ID\n        \n\nExample:\n\n``` json\n{\n  \"name\": \"Andre update\",\n  \"date\": \"2025-03-01T00:00:00.000Z\",\n  \"whatsappNum\": \"89898876\",\n  \"address\": \"Banjarbaru\",\n  \"source\": \"Instagram\",\n  \"status\": \"Prospek\",\n  \"carType\": \"Mazda CX-5\",\n  \"id\": \"67c2cc75ffbebe4f1eb86dbe\"\n}\n#### Response\n- Status: 200\n- Content-Type: application/json\n```json\n{\n  \"salesId\": \"\",\n  \"name\": \"\",\n  \"date\": \"\",\n  \"whatsappNum\": \"\",\n  \"address\": \"\",\n  \"source\": \"\",\n  \"status\": \"\",\n  \"carType\": \"\",\n  \"id\": \"\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete data Prospek",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful DELETE request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/prospek/67c90036b0bb3bb21defc379",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"prospek",
+						"67c90036b0bb3bb21defc379"
+					]
+				},
+				"description": "### HTTP DELETE Request to Delete Prospect Data\n\nThis HTTP DELETE request is used to delete prospect data that was previously created via a POST request. The request is sent to the following endpoint:\n\n```\nhttp://192.168.165.239:5000/api/prospek/67c90036b0bb3bb21defc379\n\n ```\n\n#### Request Body\n\nThis request does not contain a request body.\n\n#### Response\n\nUpon successful deletion, the server returns a `204 No Content` response with a `Content-Type` of `text/xml`."
+			},
+			"response": []
+		},
+		{
+			"name": "Crete SPK data",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"prospekId\": \"67c8ffcb747b9dc2fd71ead4\",        \r\n        \"dateSpk\": \"2025-03-06\",\r\n        \"noKtp\": \"6202272524262728\",\r\n        \"address\": \"Kandui\",\r\n        \"cashOrCredit\": \"Cash\",\r\n        \"downPayment\": \"25%\",\r\n        \"tenor\": \"12 Bulan\",\r\n        \"leasing\": \"BRI\"        \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						""
+					]
+				},
+				"description": "### POST /api/spk/\n\nThis endpoint is used to create a new sales purchase agreement (SPK).\n\n#### Request Body\n\n- **prospekId** (string, required): The ID of the prospect.\n    \n- **dateSpk** (string, required): The date of the sales purchase agreement.\n    \n- **noKtp** (string, required): The KTP (identity card) number.\n    \n- **address** (string, required): The address of the prospect.\n    \n- **cashOrCredit** (string, required): Indicates whether the payment is in cash or credit.\n    \n- **downPayment** (string, required): The down payment percentage.\n    \n- **tenor** (string, required): The duration of the agreement.\n    \n- **leasing** (string, required): The leasing company.\n    \n\n#### Response (201 - Created)\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"message\": {\n      \"type\": \"string\"\n    },\n    \"newSpk\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"prospekId\": {\n          \"type\": \"string\"\n        },\n        \"salesId\": {\n          \"type\": \"string\"\n        },\n        \"dateSpk\": {\n          \"type\": \"string\"\n        },\n        \"noKtp\": {\n          \"type\": \"string\"\n        },\n        \"address\": {\n          \"type\": \"string\"\n        },\n        \"cashOrCredit\": {\n          \"type\": \"string\"\n        },\n        \"downPayment\": {\n          \"type\": \"string\"\n        },\n        \"tenor\": {\n          \"type\": \"string\"\n        },\n        \"leasing\": {\n          \"type\": \"string\"\n        },\n        \"followUps\": {\n          \"type\": \"array\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data SPK",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						""
+					]
+				},
+				"description": "### GET /api/spk/\n\nThis endpoint retrieves a list of prospects along with their sales information.\n\n#### Request\n\nNo request body is required for this GET request.\n\n- URL:\n    \n    - `http://192.168.165.239:5000/api/spk/`\n        \n\n#### Response\n\nUpon a successful execution, the server responds with a status code of 200 and the following JSON data:\n\n``` json\n[\n    {\n        \"prospekId\": {\n            \"_id\": \"\",\n            \"name\": \"\",\n            \"whatsappNum\": \"\",\n            \"carType\": \"\"\n        },\n        \"salesId\": {\n            \"_id\": \"\",\n            \"username\": \"\"\n        },\n        \"dateSpk\": \"\",\n        \"noKtp\": \"\",\n        \"address\": \"\",\n        \"cashOrCredit\": \"\",\n        \"downPayment\": \"\",\n        \"tenor\": \"\",\n        \"leasing\": \"\",\n        \"followUps\": [\n            {\n                \"dateFollowUp\": \"\",\n                \"customerResponse\": \"\",\n                \"_id\": \"\"\n            }\n        ],\n        \"id\": \"\"\n    }\n]\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Data SPK",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"prospekId\": \"67c8ffcb747b9dc2fd71ead4\",        \r\n        \"dateSpk\": \"2025-03-06\",\r\n        \"noKtp\": \"6202272524262728\",\r\n        \"address\": \"Gunung Timang\",\r\n        \"cashOrCredit\": \"Cash\",\r\n        \"downPayment\": \"25%\",\r\n        \"tenor\": \"12 Bulan\",\r\n        \"leasing\": \"BRI\"        \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/67c903de3a969a72d1012a6b",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						"67c903de3a969a72d1012a6b"
+					]
+				},
+				"description": "### Update Prospek SPK\n\nThis endpoint is used to update a specific SPK (Surat Pemesanan Kendaraan) for a prospect.\n\n#### Request Body\n\n- `prospekId` (string) - The ID of the prospect.\n    \n- `dateSpk` (string) - The date of the SPK.\n    \n- `noKtp` (string) - The KTP (Kartu Tanda Penduduk) number of the prospect.\n    \n- `address` (string) - The address of the prospect.\n    \n- `cashOrCredit` (string) - Indicates whether the payment is in cash or credit.\n    \n- `downPayment` (string) - The down payment percentage or amount.\n    \n- `tenor` (string) - The duration of the tenor.\n    \n- `leasing` (string) - The leasing company.\n    \n\n#### Response\n\n- `message` (string) - A message regarding the status of the request.\n    \n- `data` (object)\n    \n    - `prospekId` (string) - The ID of the prospect.\n        \n    - `salesId` (string) - The ID of the sales representative.\n        \n    - `dateSpk` (string) - The date of the SPK.\n        \n    - `noKtp` (string) - The KTP number of the prospect.\n        \n    - `address` (string) - The address of the prospect.\n        \n    - `cashOrCredit` (string) - Indicates whether the payment is in cash or credit.\n        \n    - `downPayment` (string) - The down payment percentage or amount.\n        \n    - `tenor` (string) - The duration of the tenor.\n        \n    - `leasing` (string) - The leasing company.\n        \n    - `followUps` (array) - An array of follow-up details.\n        \n    - `id` (string) - The ID of the SPK."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Data SPK By ID",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/67bf262810d2c151c5a703cc",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						"67bf262810d2c151c5a703cc"
+					]
+				},
+				"description": "### DELETE /api/spk/67bf262810d2c151c5a703cc\n\nThis endpoint deletes a specific prospect's sales information.\n\n#### Request\n\nNo request body is required for this DELETE request.\n\n- URL:\n    \n    - `http://192.168.165.239:5000/api/spk/67bf262810d2c151c5a703cc`\n        \n\n#### Response\n\nUpon a successful execution, the server responds with a status code of 200 and the following JSON data:\n\n``` json\n{\n    \"message\": \"\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data SPK By ID",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/67bf262810d2c151c5a703cc",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						"67bf262810d2c151c5a703cc"
+					]
+				},
+				"description": "### GET /api/spk/{spkId}\n\nThis endpoint retrieves the prospect details and sales information for a specific prospect identified by the `spkId`.\n\n#### Request\n\nNo request body is required for this GET request.\n\n- URL:\n    \n    - `http://192.168.165.239:5000/api/spk/{spkId}`\n        \n\n#### Response\n\nUpon a successful execution, the server responds with a status code of 200 and the following JSON data:\n\n``` json\n{\n    \"prospekId\": {\n        \"_id\": \"\",\n        \"name\": \"\",\n        \"whatsappNum\": \"\",\n        \"carType\": \"\"\n    },\n    \"salesId\": \"\",\n    \"dateSpk\": \"\",\n    \"noKtp\": \"\",\n    \"address\": \"\",\n    \"cashOrCredit\": \"\",\n    \"downPayment\": \"\",\n    \"tenor\": \"\",\n    \"leasing\": \"\",\n    \"followUps\": [\n        {\n            \"dateFollowUp\": \"\",\n            \"customerResponse\": \"\",\n            \"_id\": \"\"\n        }\n    ],\n    \"id\": \"\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Data Test Drive",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n\r\n  {\r\n    \"prospekId\": \"67bd41d832fb6ca397f75c41\",\r\n    \"dateTestDrive\": \"2025-03-06\",\r\n    \"carType\": \"Mazda-CX5\"    \r\n  }\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/test-drive",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"test-drive"
+					]
+				},
+				"description": "### Test Drive API\n\nThis API endpoint allows you to schedule a test drive for a car.\n\n#### Request\n\n- Method: POST\n    \n- Endpoint: `http://192.168.165.239:5000/api/test-drive`\n    \n- Body:\n    \n    - `prospekId` (string): The ID of the prospect for whom the test drive is being scheduled.\n        \n    - `dateTestDrive` (string): The date of the test drive in the format \"YYYY-MM-DD\".\n        \n    - `carType` (string): The type of car for which the test drive is being scheduled.\n        \n\n#### Response\n\nThe response is in JSON format and follows the schema below:\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"message\": {\n            \"type\": \"string\"\n        },\n        \"newTestDrive\": {\n            \"type\": \"object\",\n            \"properties\": {\n                \"prospekId\": {\n                    \"type\": \"string\"\n                },\n                \"salesId\": {\n                    \"type\": \"string\"\n                },\n                \"dateTestDrive\": {\n                    \"type\": \"string\"\n                },\n                \"carType\": {\n                    \"type\": \"string\"\n                },\n                \"id\": {\n                    \"type\": \"string\"\n                }\n            }\n        }\n    }\n}\n\n ```\n\n- Status: 201\n    \n- Content-Type: application/json\n    \n\nThe response includes a `message` field and details of the newly scheduled test drive including `prospekId`, `salesId`, `dateTestDrive`, `carType`, and `id`."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data Test Drive",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/test-drive",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"test-drive"
+					]
+				},
+				"description": "### GET /api/test-drive\n\nThis endpoint retrieves test drive information.\n\n#### Request\n\nNo request body is required for this endpoint.\n\n#### Response\n\nThe response will be a JSON array containing test drive objects with the following schema:\n\n``` json\n[\n  {\n    \"prospekId\": {\n      \"_id\": \"string\",\n      \"name\": \"string\",\n      \"whatsappNum\": \"string\"\n    },\n    \"salesId\": {\n      \"_id\": \"string\",\n      \"username\": \"string\"\n    },\n    \"dateTestDrive\": \"string\",\n    \"carType\": \"string\",\n    \"id\": \"string\"\n  }\n]\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data Test Drive By ID",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/test-drive/67c907b23a969a72d1012ab0",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"test-drive",
+						"67c907b23a969a72d1012ab0"
+					]
+				},
+				"description": "This endpoint makes an HTTP GET request to retrieve the details of a test drive with a specific ID. The response will contain information about the prospect, sales representative, test drive date, car type, and the test drive ID.\n\n### Request Body\n\nThis endpoint does not require a request body.\n\n### Response Body\n\nThe response will be in JSON format and will include the following fields:\n\n- `prospekId`: An object containing prospect details such as ID, name, and WhatsApp number.\n    \n- `salesId`: The ID of the sales representative.\n    \n- `dateTestDrive`: The date of the test drive.\n    \n- `carType`: The type of car for the test drive.\n    \n- `id`: The ID of the test drive."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Data Test Drive",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"prospekId\": \"67bd41d832fb6ca397f75c41\",    \r\n    \"dateTestDrive\": \"2025-03-06\",\r\n    \"carType\": \"Mazda-CX5 Update\"    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/test-drive/67c907b23a969a72d1012ab0",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"test-drive",
+						"67c907b23a969a72d1012ab0"
+					]
+				},
+				"description": "### Update Test Drive Details\n\nThis endpoint allows the client to update the details of a test drive.\n\n#### Request Body\n\n- `prospekId` (string) - The ID of the prospect for the test drive.\n    \n- `dateTestDrive` (string) - The date of the test drive.\n    \n- `carType` (string) - The type of car for the test drive.\n    \n\nExample:\n\n``` json\n{\n    \"prospekId\": \"string\",\n    \"dateTestDrive\": \"string\",\n    \"carType\": \"string\"\n}\n\n ```\n\n#### Response\n\nThe response is a JSON schema representing the updated test drive details.\n\n``` json\n{\n    \"message\": \"string\",\n    \"data\": {\n        \"prospekId\": \"string\",\n        \"salesId\": \"string\",\n        \"dateTestDrive\": \"string\",\n        \"carType\": \"string\",\n        \"id\": \"string\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Data Prospek",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/test-drive/67c907b23a969a72d1012ab0",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"test-drive",
+						"67c907b23a969a72d1012ab0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crete Data Retail",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n    {\r\n        \"prospekId\": \"67c14f2f078c4901b8243629\",\r\n        \"dateRetail\": \"2025-03-06\",\r\n        \"status\": \"Retail\",\r\n        \"carType\": \"Mazda-CX5\"        \r\n    }\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/retail",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"retail"
+					]
+				},
+				"description": "### Retail API\n\nThis API endpoint allows you to create a retail record.\n\n#### Request Body\n\n- `prospekId` (string) - The ID of the prospect.\n    \n- `dateRetail` (string) - The date of the retail.\n    \n- `status` (string) - The status of the retail.\n    \n- `carType` (string) - The type of car for the retail.\n    \n\n#### Response\n\nThe response is in JSON format and follows the schema below:\n\n``` json\n{\n    \"message\": \"\",\n    \"data\": {\n        \"salesId\": \"\",\n        \"prospekId\": \"\",\n        \"dateRetail\": \"\",\n        \"status\": \"\",\n        \"carType\": \"\",\n        \"id\": \"\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data Retail",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/retail",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"retail"
+					]
+				},
+				"description": "### GET /api/retail\n\nThis endpoint retrieves retail information.\n\n#### Request\n\nThis is a simple GET request and does not require a request body.\n\n#### Response\n\nThe response is a JSON array containing retail information. The schema for the response is as follows:\n\n``` json\n[\n    {\n        \"salesId\": {\n            \"_id\": \"string\",\n            \"username\": \"string\",\n            \"level\": \"string\"\n        },\n        \"prospekId\": {\n            \"_id\": \"string\",\n            \"name\": \"string\"\n        },\n        \"dateRetail\": \"string\",\n        \"status\": \"string\",\n        \"carType\": \"string\",\n        \"id\": \"string\"\n    }\n]\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Data Retail",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{        \r\n        \"prospekId\": \"67c14f2f078c4901b8243629\",\r\n        \"dateRetail\": \"2025-03-06T00:00:00.000Z\",\r\n        \"status\": \"Retail\",\r\n        \"carType\": \"Mazda-CX5 update\"        \r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/retail/67c909ec3a969a72d1012abc",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"retail",
+						"67c909ec3a969a72d1012abc"
+					]
+				},
+				"description": "### Update Retail Information\n\nThis endpoint allows the client to update retail information by sending an HTTP PUT request to the specified URL.\n\n#### Request Body\n\n- `prospekId` (string) - The ID of the prospect associated with the retail.\n    \n- `dateRetail` (string) - The date of the retail in the format \"YYYY-MM-DDTHH:MM:SS.MMMZ\".\n    \n- `status` (string) - The status of the retail.\n    \n- `carType` (string) - The type of car for the retail.\n    \n\n#### Response\n\nThe response is in JSON format and includes the following fields:\n\n- `salesId` (string) - The ID of the sales associated with the retail.\n    \n- `prospekId` (string) - The ID of the prospect associated with the retail.\n    \n- `dateRetail` (string) - The date of the retail.\n    \n- `status` (string) - The status of the retail.\n    \n- `carType` (string) - The type of car for the retail.\n    \n- `id` (string) - The ID of the updated retail information.\n    \n\n#### JSON Schema for Response\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"salesId\": { \"type\": \"string\" },\n        \"prospekId\": { \"type\": \"string\" },\n        \"dateRetail\": { \"type\": \"string\" },\n        \"status\": { \"type\": \"string\" },\n        \"carType\": { \"type\": \"string\" },\n        \"id\": { \"type\": \"string\" }\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Data Retail",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/retail/67c909ec3a969a72d1012abc",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"retail",
+						"67c909ec3a969a72d1012abc"
+					]
+				},
+				"description": "The API endpoint sends an HTTP DELETE request to [http://192.168.165.239:5000/api/retail/67c909ec3a969a72d1012abc](http://192.168.165.239:5000/api/retail/67c909ec3a969a72d1012abc).\n\n### Response\n\nThe response is in JSON format and has the following schema:\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"message\": {\n            \"type\": \"string\"\n        }\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Cretate Data Follow-up",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjAxODk4ZGRhYjM5ZjE3ZjBiOTVlZiIsImxldmVsIjoic2FsZXMiLCJpYXQiOjE3NDEyMjg5MDAsImV4cCI6MTc0MTMxNTMwMH0.5KSWhMpwFyEB6LwqnZLfxtJdRA_rGFpcZTs0Cc9613s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n                \"dateFollowUp\": \"2025-03-06\",\r\n                \"salesProses\": \"Warm (antara 2-3 bulan)\",\r\n                \"customerResponse\": \"Menjual Mobil lama\",\r\n                \"recommendation\": \"FU tgl 2025-03-04\"              \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/67c903de3a969a72d1012a6b/follow-up",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						"67c903de3a969a72d1012a6b",
+						"follow-up"
+					]
+				},
+				"description": "### Add Follow-Up\n\nThis endpoint allows the user to add a follow-up entry for a specific prospect.\n\n#### Request Body\n\n- `dateFollowUp` (string): The date of the follow-up.\n    \n- `salesProses` (string): The stage of the sales process.\n    \n- `customerResponse` (string): The response from the customer.\n    \n- `recommendation` (string): The recommendation for the follow-up.\n    \n\nExample:\n\n``` json\n{\n    \"dateFollowUp\": \"2025-03-06\",\n    \"salesProses\": \"Warm (antara 2-3 bulan)\",\n    \"customerResponse\": \"Menjual Mobil lama\",\n    \"recommendation\": \"FU tgl 2025-03-04\"\n}\n\n ```\n\n#### Response\n\n- Status: 200\n    \n- { \"message\": \"\", \"data\": { \"prospekId\": \"\", \"salesId\": \"\", \"dateSpk\": \"\", \"noKtp\": \"\", \"address\": \"\", \"cashOrCredit\": \"\", \"downPayment\": \"\", \"tenor\": \"\", \"leasing\": \"\", \"followUps\": \\[ { \"dateFollowUp\": \"\", \"salesProses\": \"\", \"customerResponse\": \"\", \"recommendation\": \"\", \"_id\": \"\" } \\], \"id\": \"\" }}"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data Follow-up By Id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjAxODk4ZGRhYjM5ZjE3ZjBiOTVlZiIsImxldmVsIjoic2FsZXMiLCJpYXQiOjE3NDEyMjg5MDAsImV4cCI6MTc0MTMxNTMwMH0.5KSWhMpwFyEB6LwqnZLfxtJdRA_rGFpcZTs0Cc9613s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n                \"dateFollowUp\": \"2025-03-06\",\r\n                \"salesProses\": \"Warm (antara 2-3 bulan)\",\r\n                \"customerResponse\": \"Menjual Mobil lama\",\r\n                \"recommendation\": \"FU tgl 2025-03-04\"              \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/67c903de3a969a72d1012a6b/follow-up/67c90b783a969a72d1012acd",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						"67c903de3a969a72d1012a6b",
+						"follow-up",
+						"67c90b783a969a72d1012acd"
+					]
+				},
+				"description": "### Add Follow-Up\n\nThis endpoint allows the user to add a follow-up entry for a specific prospect.\n\n#### Request Body\n\n- `dateFollowUp` (string): The date of the follow-up.\n    \n- `salesProses` (string): The stage of the sales process.\n    \n- `customerResponse` (string): The response from the customer.\n    \n- `recommendation` (string): The recommendation for the follow-up.\n    \n\nExample:\n\n``` json\n{\n    \"dateFollowUp\": \"2025-03-06\",\n    \"salesProses\": \"Warm (antara 2-3 bulan)\",\n    \"customerResponse\": \"Menjual Mobil lama\",\n    \"recommendation\": \"FU tgl 2025-03-04\"\n}\n\n ```\n\n#### Response\n\nThe response is in JSON format and follows the schema below:\n\n``` json\n{\n    \"message\": \"string\",\n    \"data\": {\n        \"dateFollowUp\": \"string\",\n        \"salesProses\": \"string\",\n        \"customerResponse\": \"string\",\n        \"recommendation\": \"string\",\n        \"_id\": \"string\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Data Follow-up",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjAxODk4ZGRhYjM5ZjE3ZjBiOTVlZiIsImxldmVsIjoic2FsZXMiLCJpYXQiOjE3NDEyMjg5MDAsImV4cCI6MTc0MTMxNTMwMH0.5KSWhMpwFyEB6LwqnZLfxtJdRA_rGFpcZTs0Cc9613s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n                \"dateFollowUp\": \"2025-03-06\",\r\n                \"salesProses\": \"Warm (antara 2-3 bulan) update\",\r\n                \"customerResponse\": \"Menjual Mobil lama\",\r\n                \"recommendation\": \"FU tgl 2025-03-04\"              \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/67c903de3a969a72d1012a6b/follow-up/67c90b783a969a72d1012acd",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						"67c903de3a969a72d1012a6b",
+						"follow-up",
+						"67c90b783a969a72d1012acd"
+					]
+				},
+				"description": "### Update Follow-Up Entry\n\nThis endpoint is used to update a follow-up entry for a specific prospect.\n\n#### Request Body\n\n- `dateFollowUp` (string): The date of the follow-up.\n    \n- `salesProses` (string): The stage of the sales process.\n    \n- `customerResponse` (string): The response from the customer.\n    \n- `recommendation` (string): The recommendation for the follow-up.\n    \n\nExample:\n\n``` json\n{\n    \"dateFollowUp\": \"2025-03-06\",\n    \"salesProses\": \"Warm (antara 2-3 bulan) update\",\n    \"customerResponse\": \"Menjual Mobil lama\",\n    \"recommendation\": \"FU tgl 2025-03-04\"\n}\n\n ```\n\n#### Response\n\nThe response will be in JSON format and will follow the schema below:\n\n``` json\n{\n    \"message\": \"string\",\n    \"followUp\": {\n        \"dateFollowUp\": \"string\",\n        \"salesProses\": \"string\",\n        \"customerResponse\": \"string\",\n        \"recommendation\": \"string\",\n        \"_id\": \"string\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Data Follow-up",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjAxODk4ZGRhYjM5ZjE3ZjBiOTVlZiIsImxldmVsIjoic2FsZXMiLCJpYXQiOjE3NDEyMjg5MDAsImV4cCI6MTc0MTMxNTMwMH0.5KSWhMpwFyEB6LwqnZLfxtJdRA_rGFpcZTs0Cc9613s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.165.239:5000/api/spk/67c903de3a969a72d1012a6b/follow-up/67c90b783a969a72d1012acd",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"165",
+						"239"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"spk",
+						"67c903de3a969a72d1012a6b",
+						"follow-up",
+						"67c90b783a969a72d1012acd"
+					]
+				},
+				"description": "### Update Follow-Up Entry\n\nThis endpoint is used to update a follow-up entry for a specific prospect.\n\n#### Request Body\n\n- `dateFollowUp` (string): The date of the follow-up.\n    \n- `salesProses` (string): The stage of the sales process.\n    \n- `customerResponse` (string): The response from the customer.\n    \n- `recommendation` (string): The recommendation for the follow-up.\n    \n\n#### Response\n\nThe response will be in JSON format and will follow the schema below:\n\n``` json\n{\n    \"message\": \"string\",\n    \"followUp\": {\n        \"dateFollowUp\": \"string\",\n        \"salesProses\": \"string\",\n        \"customerResponse\": \"string\",\n        \"recommendation\": \"string\",\n        \"_id\": \"string\"\n    }\n}\n\n ```"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}
