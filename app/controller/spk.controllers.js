@@ -1,13 +1,15 @@
 const db = require("../models");
 const Spk = db.spk;
 const Prospek = db.prospek;
+const User = db.users;
+const Notification = db.notification;
 const logger = require("../utils/logger");
 
 
 exports.createSpk = async (req, res) => {
   try {
     const userId = req.user.id;
-
+    const salesName = req.user.username;
     const {      
       prospekId,
       dateSpk,
@@ -38,10 +40,22 @@ exports.createSpk = async (req, res) => {
       status
     });
 
-    const savedSpk = await newSpk.save();
-    logger.info("SPK berhasil ditambahkan");
+    const spk = await newSpk.save();
+    await spk.populate("prospekId","name");
+    const svp = await User.findOne({ level: 'svp'} );
     
-    res.status(201).send({ message: "SPK berhasil ditambahkan", newSpk: savedSpk });
+
+    if(svp) {
+      await Notification.create({
+        recipientId: svp._id,
+        level: 'svp',
+        title: 'SPK Baru',
+        message: `${salesName} Membuat spk untuk ${spk.prospekId.name}`
+      })
+    }
+    
+    logger.info("SPK berhasil ditambahkan");
+    res.status(201).send({ message: "SPK berhasil ditambahkan",  spk });
   } catch (error) {
     logger.error("Terjadi kesalahan saat menambahkan SPK", { error: error.message });
     res.status(500).send({ message: "Terjadi kesalahan saat menambahkan SPK", error: error.message });

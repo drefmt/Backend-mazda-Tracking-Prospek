@@ -1,47 +1,58 @@
 const schedule = require("node-schedule");
 const db = require("../models");
-const Prospect = db.prospek;
+const Prospek = db.prospek;
 const Notification = db.notification;
 const logger = require("./logger");
 
 const runReminderJob = () => {
-  schedule.scheduleJob("* * * * *", async () => {
-    const today = new Date().toISOString().split("T")[0];
+  schedule.scheduleJob("0 7 * * *", async () => {
+    console.log("CRON JOB JALAN");
 
-    const prospects = await Prospect.find({
-      status: { $in: ["Prospek", "TestDrive", "SPK"] },
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+ 
+    const prospek = await Prospek.find({
+      status: { $in:  ['Prospek','Test-Drive','SPK'] },
       followUps: {
         $elemMatch: {
           followUpDate: {
-            $gte: new Date(`${today}T00:00:00Z`),
-            $lte: new Date(`${today}T23:59:59Z`),
+            $gte: start,
+            $lte: end,
           },
         },
       },
     }).populate("salesId");
 
-    for (const prospect of prospects) {
+    console.log(`[CRON] Jumlah prospect ditemukan: ${prospek.length}`);
+
+    for (const p of prospek) {
       const existingNotif = await Notification.findOne({
-        recipientId: prospect.salesId._id,
+        recipientId: p.salesId._id,
         level: "sales",
-        message: `Hari ini follow-up ${prospect.name}`,
+        title: `Jangan lupa follow-up ${p.name}!`,
+        message: `${p.name} sedang menunggu kabar dari Anda hari ini.`,
+         link: `detail/${p._id}`,
+
         createdAt: {
-          $gte: new Date(`${today}T00:00:00Z`),
-          $lte: new Date(`${today}T23:59:59Z`),
+          $gte: start,
+          $lte: end,
         },
       });
 
       if (!existingNotif) {
         await Notification.create({
-          recipientId: prospect.salesId._id,
+          recipientId: p.salesId._id,
           level: "sales",
-          title: "Reminder Follow-up",
-          message: `Hari ini follow-up ${prospect.name}`,
-          link: `/prospek/${prospect._id}`,
+          title: `Jangan lupa follow-up ${p.name}!`,
+          message: `${p.name} sedang menunggu kabar dari Anda hari ini.`,
+          link: `detail/${p._id}`,
         });
 
         logger.info(
-          `[Reminder] Notifikasi follow-up untuk ${prospect.name} dikirim ke ${prospect.salesId.username} (${today})`
+          `[Reminder] Notifikasi follow-up untuk ${p.name} dikirim ke ${p.salesId.username}`
         );
       }
     }

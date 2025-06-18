@@ -1,10 +1,14 @@
 const db = require("../models");
 const TestDrive = db.testDrive;
+const Notification = db.notification;
+const User = db.users;
+
 const logger = require("../utils/logger"); // Import logger
 
 exports.createTestDrive = async (req, res) => {
   try {
     const userId = req.user.id;
+    const salesName = req.user.username;
     const { prospekId, dateTestDrive, carType } = req.body;
     
     const existingTestDrive = await TestDrive.findOne({
@@ -24,11 +28,23 @@ exports.createTestDrive = async (req, res) => {
       carType,
     });
 
-    await newTestDrive.save();
+    const testDrive = await newTestDrive.save();
+    await testDrive.populate('prospekId','name')
+    const svp = await User.findOne ({ level: 'svp'});
+
+    if (svp) {
+      await Notification.create({
+          recipientId: svp._id,
+          level: 'svp',
+          title: 'Test-Drive Baru',
+          message: `Sales ${salesName} Menjadwalkan Test-Drive untuk ${testDrive.prospekId.name}`
+      })
+    }
+    
     logger.info(`TestDrive berhasil ditambahkan oleh user: ${userId}`, { newTestDrive });
     res.status(201).send({
-      message: "TestDrive berhasil ditambahkan",
-      newTestDrive,
+      message: "Test-Drive berhasil ditambahkan",
+      testDrive,
     });
   } catch (error) {
     logger.error(`Kesalahan saat menambahkan Test Drive: ${error.message}`);

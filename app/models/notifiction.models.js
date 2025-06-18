@@ -8,11 +8,12 @@ module.exports = (mongoose) => {
             },
             level: {
                 type: String,
-                enum: ['sales','spv'],
+                enum: ['sales','svp'],
                 required: true,
             },
             title: String,
             message: String,
+            link:String,
             isRead: {
                 type: Boolean,
                 default: false

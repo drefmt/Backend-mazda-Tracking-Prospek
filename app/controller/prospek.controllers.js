@@ -1,11 +1,13 @@
-
 const db = require("../models");
 const Prospek = db.prospek;
 const logger = require("../utils/logger");
+const User = db.users;
+const Notification = db.notification;
 
 exports.createProspek = async (req, res) => {
   try {
     const salesId = req.user.id;
+    const salesName = req.user.username;
     const {
       name,
       date,
@@ -28,13 +30,25 @@ exports.createProspek = async (req, res) => {
       category,
     });
 
-    const savedProspek = await newProspek.save();
+    const prospek = await newProspek.save();
+    const svp = await User.findOne({ level: 'svp'});
+
+    if (svp) {
+      console.log("find supervisor: ", svp.username);
+      await Notification.create({
+        recipientId: svp._id,
+        level: 'svp',
+        title: "Prospek Baru",
+        message: `Sales ${salesName} menambahkan - ${prospek.name}`
+      })
+    }
+
     logger.info(
       `Prospek berhasil dibuat  berhasil diperbarui oleh user ${salesId}`
     );
     res
       .status(201)
-      .send({ message: "Prospek berhasil ditambahkan", data: savedProspek });
+      .send({ message: "Prospek berhasil ditambahkan", data: prospek });
   } catch (error) {
     logger.error(`Kesalahan saat membuat prospek: ${error.message}`);
     res.status(500).send({ message: error.message });
@@ -187,18 +201,18 @@ exports.getFollowUpById = async (req, res) => {
     logger.error("Terjadi kesalahan saat mencari follow-up", {
       error: error.message,
     });
-    res
-      .status(500)
-      .send({
-        message: "Terjadi kesalahan saat mencari follow-up",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Terjadi kesalahan saat mencari follow-up",
+      error: error.message,
+    });
   }
 };
 
 exports.addFollowUp = async (req, res) => {
   try {
     const userId = req.user.id;
+    const sales = req.user.username;    
+
     const { id } = req.params; // ID Prospek
     const {
       followUpDate,
@@ -209,7 +223,10 @@ exports.addFollowUp = async (req, res) => {
       recommendation,
     } = req.body;
 
-    const prospek = await Prospek.findOne({ _id: id, salesId: userId });
+    const prospek = await Prospek.findOne({
+      _id: id,
+      salesId: userId,      
+    });
 
     if (!prospek) {
       logger.warn("Prospek tidak ditemukan atau bukan milik user", {
@@ -232,7 +249,21 @@ exports.addFollowUp = async (req, res) => {
     });
     await prospek.save();
 
-    logger.info("Follow-up berhasil ditambahkan", { prospekId: id, userId });
+    const spv = await User.findOne({ level: "svp" });
+    if (spv) {
+      console.log("Supervisor ditemukan:", spv.username);
+
+      await Notification.create({
+        recipientId: spv._id,
+        level: "svp",
+        title: "Follow-Up Baru oleh Sales",
+        message: `Sales ${sales} melakukan follow-up untuk ${prospek.name}`,
+        link: `detail/${prospek._id}`,
+      });
+
+      console.log("✅ Notifikasi untuk SPV berhasil dikirim.");
+    }
+
     res
       .status(200)
       .send({ message: "Follow-up berhasil ditambahkan", data: prospek });
@@ -240,12 +271,10 @@ exports.addFollowUp = async (req, res) => {
     logger.error("Terjadi kesalahan saat menambahkan follow-up", {
       error: error.message,
     });
-    res
-      .status(500)
-      .send({
-        message: "Terjadi kesalahan saat menambahkan follow-up",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Terjadi kesalahan saat menambahkan follow-up",
+      error: error.message,
+    });
   }
 };
 

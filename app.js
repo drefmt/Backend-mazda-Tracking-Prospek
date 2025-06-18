@@ -37,7 +37,7 @@ app.use('/api/prospek', prospekRoutes);
 app.use('/api/spk', spkRoutes);
 app.use('/api/test-drive', testDriveRoutes);
 app.use('/api/retail', retailRoutes);
-app.use('/api/notification', notification);
+app.use('/api/notification/prospect-reminder', notification);
 
 app.use((err, req, res, next) => {
   logger.error(`🚨 Error terjadi: ${err.message}`);

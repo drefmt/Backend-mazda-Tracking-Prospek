@@ -4,7 +4,7 @@ const Notification = db.notification;
 
 exports.getUserNotifications = async (req, res) => {
     try {
-        const notification = await Notification.find({userId: req.user.id}).sort({createdAt: -1});
+        const notification = await Notification.find({userId: req.user._id}).sort({createdAt: -1});
         res.send(notification)
     } catch (error) {
         res.status(500).send({ error: 'Failed to retrieve notification' });
