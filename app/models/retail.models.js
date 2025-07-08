@@ -14,12 +14,7 @@ module.exports = (mongoose) => {
             dateRetail:{
                 type: Date,
                 require: true,
-            },
-            status: {
-                type: String,
-                enum: ["Retail"],
-                require: true
-            },
+            },           
             carType: {
                 type: String,
                 require: true

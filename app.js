@@ -16,8 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-    // res.setHeader("Access-Control-Allow-Origin", "http://192.168.165.239:5173");
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");    
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -29,19 +28,28 @@ const prospekRoutes = require('./app/routes/prospek.routes');
 const spkRoutes = require('./app/routes/spk.routes');
 const testDriveRoutes = require('./app/routes/testDrive.routes');
 const retailRoutes = require('./app/routes/retail.routes');
-const notification = require('./app/routes/notification.routes');
+const notificationRoutes = require('./app/routes/notification.routes');
+const dashboardRoutes = require('./app/routes/dashboard.routes')
 
+
+// report
+const reportRoutes = require('./app/routes/report.routes');
 
 app.use('/api/users', usersRoute);
 app.use('/api/prospek', prospekRoutes);
 app.use('/api/spk', spkRoutes);
 app.use('/api/test-drive', testDriveRoutes);
 app.use('/api/retail', retailRoutes);
-app.use('/api/notification/prospect-reminder', notification);
+app.use('/api/notification/prospect-reminder', notificationRoutes);
+app.use('/api/dashboard', dashboardRoutes)
+
+// report 
+app.use('/api/report', reportRoutes);
 
 app.use((err, req, res, next) => {
   logger.error(`🚨 Error terjadi: ${err.message}`);
   res.status(500).json({ error: "Terjadi kesalahan di server" });
+  // next()
 });
 
 module.exports = app;

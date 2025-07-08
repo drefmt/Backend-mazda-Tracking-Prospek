@@ -2,6 +2,7 @@ const db = require("../models");
 const Prospek = db.prospek;
 const logger = require("../utils/logger");
 const User = db.users;
+const SPK = db.spk;
 const Notification = db.notification;
 
 exports.createProspek = async (req, res) => {
@@ -31,16 +32,16 @@ exports.createProspek = async (req, res) => {
     });
 
     const prospek = await newProspek.save();
-    const svp = await User.findOne({ level: 'svp'});
+    const svp = await User.findOne({ level: "svp" });
 
     if (svp) {
       console.log("find supervisor: ", svp.username);
       await Notification.create({
         recipientId: svp._id,
-        level: 'svp',
+        level: "svp",
         title: "Prospek Baru",
-        message: `Sales ${salesName} menambahkan - ${prospek.name}`
-      })
+        message: `Sales ${salesName} menambahkan - ${prospek.name}`,
+      });
     }
 
     logger.info(
@@ -48,10 +49,10 @@ exports.createProspek = async (req, res) => {
     );
     res
       .status(201)
-      .send({ message: "Prospek berhasil ditambahkan", data: prospek });
+      .json({ message: "Prospek berhasil ditambahkan", data: prospek });
   } catch (error) {
     logger.error(`Kesalahan saat membuat prospek: ${error.message}`);
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -72,11 +73,17 @@ exports.findAllProspek = async (req, res) => {
         .sort({ createdAt: -1 });
     }
 
+    const prospekWithFollowUpCount = prospeks.map((prospek) => {
+      const obj = prospek.toJSON();
+      obj.followUpCount = prospek.followUps.length;
+      return obj;
+    });
+
     logger.info(`Data prospek diambil untuk pengguna ${name}`);
-    res.status(200).send(prospeks);
+    res.status(200).json(prospekWithFollowUpCount);
   } catch (error) {
     logger.error(`Kesalahan saat mengambil prospek: ${error.message}`);
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -99,16 +106,16 @@ exports.findProspekById = async (req, res) => {
 
     if (!foundProspek) {
       logger.warn(`Prospek tidak ditemukan untuk id: ${id}`);
-      return res.status(404).send({ message: "Prospek tidak ditemukan" });
+      return res.status(404).json({ message: "Prospek tidak ditemukan" });
     }
 
     logger.info(`Prospek ditemukan: ${JSON.stringify(foundProspek)}`);
-    res.status(200).send(foundProspek);
+    res.status(200).json(foundProspek);
   } catch (error) {
     logger.error(
       `Kesalahan saat mencari prospek berdasarkan id: ${error.message}`
     );
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -125,14 +132,14 @@ exports.updateProspek = async (req, res) => {
 
     if (!updatedProspek) {
       logger.warn(`Prospek tidak ditemukan untuk diperbarui dengan id: ${id}`);
-      return res.status(404).send({ message: "Prospek tidak ditemukan" });
+      return res.status(404).json({ message: "Prospek tidak ditemukan" });
     }
 
     logger.info(`Prospek diperbarui: ${JSON.stringify(updatedProspek)}`);
-    res.status(200).send(updatedProspek);
+    res.status(200).json(updatedProspek);
   } catch (error) {
     logger.error(`Kesalahan saat memperbarui prospek: ${error.message}`);
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -148,14 +155,35 @@ exports.deleteProspek = async (req, res) => {
 
     if (!deletedProspek) {
       logger.warn(`Prospek tidak ditemukan untuk dihapus dengan id: ${id}`);
-      return res.status(404).send({ message: "Prospek tidak ditemukan" });
+      return res.status(404).json({ message: "Prospek tidak ditemukan" });
     }
 
     logger.info(`Prospek dihapus dengan id: ${id}`);
-    res.status(204).send();
+    res.status(204).json();
   } catch (error) {
     logger.error(`Kesalahan saat menghapus prospek: ${error.message}`);
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// find Available prospek for spk
+exports.findAvailableProspekForSpk = async (req, res) => {
+  try {
+    const useProspekIds = await SPK.find().distinct("prospekId");
+
+
+    const availableProspek = await Prospek.find({
+      _id: { $nin: useProspekIds },
+    }).sort({ createdAt: -1 });
+
+
+    res.status(200).json(availableProspek.map((p) => p.toJSON()));
+  } catch (err) {
+    
+    res.status(500).json({
+      message: "Gagal mengambil prospek yang tersedia",
+      error: err.message,
+    });
   }
 };
 
@@ -177,7 +205,7 @@ exports.getFollowUpById = async (req, res) => {
       });
       return res
         .status(404)
-        .send({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
+        .json({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
     }
 
     const followUp = prospek.followUps.id(followUpId);
@@ -188,7 +216,7 @@ exports.getFollowUpById = async (req, res) => {
         prospekId: id,
         userId,
       });
-      return res.status(404).send({ message: "Follow-up tidak ditemukan" });
+      return res.status(404).json({ message: "Follow-up tidak ditemukan" });
     }
 
     logger.info("Follow-up berhasil ditemukan", {
@@ -196,12 +224,12 @@ exports.getFollowUpById = async (req, res) => {
       prospekId: id,
       userId,
     });
-    res.status(200).send({ message: "Follow-up ditemukan", data: followUp });
+    res.status(200).json({ message: "Follow-up ditemukan", data: followUp });
   } catch (error) {
     logger.error("Terjadi kesalahan saat mencari follow-up", {
       error: error.message,
     });
-    res.status(500).send({
+    res.status(500).json({
       message: "Terjadi kesalahan saat mencari follow-up",
       error: error.message,
     });
@@ -211,7 +239,7 @@ exports.getFollowUpById = async (req, res) => {
 exports.addFollowUp = async (req, res) => {
   try {
     const userId = req.user.id;
-    const sales = req.user.username;    
+    const sales = req.user.username;
 
     const { id } = req.params; // ID Prospek
     const {
@@ -225,7 +253,7 @@ exports.addFollowUp = async (req, res) => {
 
     const prospek = await Prospek.findOne({
       _id: id,
-      salesId: userId,      
+      salesId: userId,
     });
 
     if (!prospek) {
@@ -235,7 +263,7 @@ exports.addFollowUp = async (req, res) => {
       });
       return res
         .status(404)
-        .send({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
+        .json({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
     }
 
     // Menambahkan follow-up baru ke dalam array
@@ -266,12 +294,12 @@ exports.addFollowUp = async (req, res) => {
 
     res
       .status(200)
-      .send({ message: "Follow-up berhasil ditambahkan", data: prospek });
+      .json({ message: "Follow-up berhasil ditambahkan", data: prospek });
   } catch (error) {
     logger.error("Terjadi kesalahan saat menambahkan follow-up", {
       error: error.message,
     });
-    res.status(500).send({
+    res.status(500).json({
       message: "Terjadi kesalahan saat menambahkan follow-up",
       error: error.message,
     });
@@ -303,7 +331,7 @@ exports.updateFollowUp = async (req, res) => {
       });
       return res
         .status(404)
-        .send({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
+        .json({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
     }
 
     const followUp = prospek.followUps.id(followUpId);
@@ -314,7 +342,7 @@ exports.updateFollowUp = async (req, res) => {
         prospekId: id,
         userId,
       });
-      return res.status(404).send({ message: "Follow-up tidak ditemukan" });
+      return res.status(404).json({ message: "Follow-up tidak ditemukan" });
     }
 
     // Update data follow-up
@@ -333,14 +361,14 @@ exports.updateFollowUp = async (req, res) => {
     });
     res
       .status(200)
-      .send({ message: "Follow-up berhasil diperbarui", followUp });
+      .json({ message: "Follow-up berhasil diperbarui", followUp });
   } catch (error) {
     logger.error("Terjadi kesalahan saat memperbarui follow-up", {
       error: error.message,
     });
     res
       .status(500)
-      .send({ message: "Terjadi kesalahan", error: error.message });
+      .json({ message: "Terjadi kesalahan", error: error.message });
   }
 };
 
@@ -358,7 +386,7 @@ exports.deleteFollowUp = async (req, res) => {
       });
       return res
         .status(404)
-        .send({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
+        .json({ message: "Prospek tidak ditemukan atau bukan milik Anda" });
     }
 
     const followUp = prospek.followUps.id(followUpId);
@@ -368,7 +396,7 @@ exports.deleteFollowUp = async (req, res) => {
         prospekId: id,
         userId,
       });
-      return res.status(404).send({ message: "Follow-up tidak ditemukan" });
+      return res.status(404).json({ message: "Follow-up tidak ditemukan" });
     }
 
     // Hapus follow-up dari array
@@ -380,13 +408,13 @@ exports.deleteFollowUp = async (req, res) => {
       prospekId: id,
       userId,
     });
-    res.status(200).send({ message: "Follow-up berhasil dihapus" });
+    res.status(200).json({ message: "Follow-up berhasil dihapus" });
   } catch (error) {
     logger.error("Terjadi kesalahan saat menghapus follow-up", {
       error: error.message,
     });
     res
       .status(500)
-      .send({ message: "Terjadi kesalahan", error: error.message });
+      .json({ message: "Terjadi kesalahan", error: error.message });
   }
 };

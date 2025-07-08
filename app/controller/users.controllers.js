@@ -10,23 +10,23 @@ exports.register = async (req, res) => {
     
     if (!username || !email || !password) {
       logger.warn("Pendaftaran gagal: Field yang diperlukan hilang", { username, email });
-      return res.status(400).send({ message: "Silakan lengkapi semua field yang diperlukan" });
+      return res.status(400).json({ message: "Silakan lengkapi semua field yang diperlukan" });
     }
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       logger.warn("Pendaftaran gagal: Email sudah digunakan", { email });
-      return res.status(400).send({ message: "Email sudah digunakan" });
+      return res.status(400).json({ message: "Email sudah digunakan" });
     }
 
     const user = new User({ username, email, password, level });
     const savedUser = await user.save();
     logger.info("Pengguna berhasil terdaftar", { userId: savedUser._id });
-    res.status(201).send(savedUser);
+    res.status(201).json(savedUser);
   } catch (error) {
     logger.error("Kesalahan saat pendaftaran", { error: error.message });
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -37,20 +37,20 @@ exports.login = async (req, res) => {
     
     if (!username || !password) {
       logger.warn("Login gagal: Username atau password hilang", { username });
-      return res.status(400).send({ message: "Silakan masukkan username dan password" });
+      return res.status(400).json({ message: "Silakan masukkan username dan password" });
     }
 
     const user = await User.findOne({ username });
 
     if (!user) {
       logger.warn("Login gagal: Username tidak ditemukan", { username });
-      return res.status(400).send({ message: "Username tidak ditemukan" });
+      return res.status(400).json({ message: "Username tidak ditemukan" });
     }
 
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       logger.warn("Login gagal: Username atau password tidak valid", { username });
-      return res.status(400).send({ message: "Username atau password tidak valid" });
+      return res.status(400).json({ message: "Username atau password tidak valid" });
     }
 
     const token = jwt.sign(
@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
     // });
 
     logger.info("Pengguna berhasil login", { userId: user._id });
-    return res.status(200).send({
+    return res.status(200).json({
       message: "Login berhasil",
       token,
       user: {
@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     logger.error("Kesalahan saat login", { error: error.message });
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -89,14 +89,14 @@ exports.getAllUsers = async (req, res) => {
 
     if (users.length === 0) {
       logger.warn("Tidak ada pengguna ditemukan");
-      return res.status(404).send({ message: "Tidak ada pengguna ditemukan" });
+      return res.status(404).json({ message: "Tidak ada pengguna ditemukan" });
     }
 
     logger.info("Semua pengguna berhasil diambil", { count: users.length });
-    res.status(200).send(users);
+    res.status(200).json(users);
   } catch (error) {
     logger.error("Kesalahan saat mengambil pengguna", { error: error.message });
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -106,13 +106,13 @@ exports.getUserById = async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) {
       logger.warn("Pengguna tidak ditemukan", { userId: req.params.id });
-      return res.status(404).send({ message: "Pengguna tidak ditemukan" });
+      return res.status(404).json({ message: "Pengguna tidak ditemukan" });
     }
     logger.info("Pengguna ditemukan", { userId: user._id });
-    res.status(200).send(user);
+    res.status(200).json(user);
   } catch (error) {
     logger.error("Kesalahan saat mengambil pengguna berdasarkan ID", { error: error.message });
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -124,13 +124,13 @@ exports.updateUser = async (req, res) => {
     });
     if (!user) {
       logger.warn("Pengguna tidak ditemukan untuk diperbarui", { userId: req.params.id });
-      return res.status(404).send({ message: "Pengguna tidak ditemukan" });
+      return res.status(404).json({ message: "Pengguna tidak ditemukan" });
     }
     logger.info("Pengguna berhasil diperbarui", { userId: user._id });
-    res.status(200).send(user);
+    res.status(200).json(user);
   } catch (error) {
     logger.error("Kesalahan saat memperbarui pengguna", { error: error.message });
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -140,12 +140,12 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
       logger.warn("Pengguna tidak ditemukan untuk dihapus", { userId: req.params.id });
-      return res.status(404).send({ message: "Pengguna tidak ditemukan" });
+      return res.status(404).json({ message: "Pengguna tidak ditemukan" });
     }
     logger.info("Pengguna berhasil dihapus", { userId: user._id });
-    res.status(204).send({message: "Pengguna berhasil dihapus"});
+    res.status(204).json({message: "Pengguna berhasil dihapus"});
   } catch (error) {
     logger.error("Kesalahan saat menghapus pengguna", { error: error.message });
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

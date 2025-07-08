@@ -28,7 +28,7 @@ module.exports = (mongoose) => {
       },
       status: {
         type: String,
-        enum: ['Prospek','Test-Drive','SPK'],
+        enum: ["Prospek", "Test-Drive", "SPK"],
         required: true,
       },
       carType: {
@@ -54,7 +54,30 @@ module.exports = (mongoose) => {
           recommendation: { type: String },
         },
       ],
+
+      // Predict Score Variable
+
+      demografi: {
+        usia: Number,
+        jenisKelamin: { type: String, enum: ["Laki-laki", "Perempuan"] },
+        pekerjaan: String,
+        penghasilan: Number,
+      },
+      psikografis: {
+        minat: [String], // contoh: ["Mobil Sport", "Hemat BBM"]
+        gayaHidup: String, // contoh: "Aktif", "Santai", "Modern"
+        motivasi: String, // contoh: "Gengsi", "Kebutuhan Keluarga"
+      },
+      perilaku: {
+        frekuensiKontak: Number, // jumlah follow-up
+        responAwal: String, // contoh: "Cepat", "Lambat"
+        interaksiFavorit: String, // contoh: "WhatsApp"
+      },
+      lingkungan: {       
+        sumber: String, // contoh: "Teman", "Keluarga", "Iklan"
+      },
     },
+
     { timestamps: true }
   );
   prospekSchema.method("toJSON", function () {

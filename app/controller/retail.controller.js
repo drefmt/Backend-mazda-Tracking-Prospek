@@ -2,7 +2,9 @@ const { populate } = require("dotenv");
 const db = require("../models/index");
 const Retail = db.retail;
 const Notification = db.notification;
+const SPK = db.spk;
 const User = db.users;
+const Prospek = db.prospek;
 const logger = require("../utils/logger");
 
 // Create and Save a new Retail
@@ -10,12 +12,11 @@ exports.create = async (req, res) => {
   try {
     const salesId = req.user.id;
     const salesName = req.user.username;
-    const { spkId, dateRetail, status, carType } = req.body;
+    const { spkId, dateRetail, carType } = req.body;
     const newRetail = new Retail({
       salesId,
       spkId,
-      dateRetail,
-      status,
+      dateRetail,      
       carType,
     });
     const retail = await newRetail.save();
@@ -26,8 +27,7 @@ exports.create = async (req, res) => {
       populate: { path: "prospekId", select: "name" },
     });
 
-    const prospekName =
-      populatedRetail?.spkId?.prospekId?.name || "Prospek Tidak Diketahui";
+    const prospekName = populatedRetail?.spkId?.prospekId?.name || "Prospek Tidak Diketahui";
 
     if (svp) {
       await Notification.create({
@@ -37,11 +37,16 @@ exports.create = async (req, res) => {
         message: `${salesName} menyelesaikan penjualan untuk ${prospekName}`,
       });
     }
+    const spk = await SPK.findById(spkId) 
 
-    res.status(201).send({ message: "Retail berhasil ditambahkan", retail });
+    await Prospek.findByIdAndUpdate(spk.prospekId, {
+      status: 'Retail'
+    })
+
+    res.status(201).json({ message: "Retail berhasil ditambahkan", retail });
   } catch (err) {
     logger.error(`Error saat menambahkan Retail: ${err.message}`);
-    res.status(500).send({
+    res.status(500).json({
       message: err.message || "Terjadi kesalahan saat membuat Retail.",
     });
   }
@@ -81,10 +86,10 @@ exports.findAllRetail = async (req, res) => {
     }
 
     logger.info(`Retail data diakses oleh user ${salesId}`);
-    res.status(200).send(retails);
+    res.status(200).json(retails);
   } catch (err) {
     logger.error(`Error saat mengambil data Retail: ${err.message}`);
-    res.status(500).send({
+    res.status(500).json({
       message: err.message || "Terjadi kesalahan saat mengambil Retail.",
     });
   }
@@ -108,12 +113,12 @@ exports.findRetailById = async (req, res) => {
       logger.warn(
         `Retail dengan ID ${id} tidak ditemukan oleh user ${salesId}`
       );
-      return res.status(404).send({ message: "Retail tidak ditemukan" });
+      return res.status(404).json({ message: "Retail tidak ditemukan" });
     }
-    res.status(200).send(retail);
+    res.status(200).json(retail);
   } catch (err) {
     logger.error(`Error saat mencari Retail dengan ID ${id}: ${err.message}`);
-    res.status(500).send({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -132,13 +137,13 @@ exports.updateRetail = async (req, res) => {
       logger.warn(
         `Retail dengan ID ${id} tidak ditemukan oleh user ${salesId}`
       );
-      return res.status(404).send({ message: "Retail tidak ditemukan" });
+      return res.status(404).json({ message: "Retail tidak ditemukan" });
     }
-    res.status(200).send(updatedRetail);
+    res.status(200).json(updatedRetail);
   } catch (err) {
     res
       .status(500)
-      .send({ message: "Terjadi kesalahan saat memperbarui Retail." });
+      .json({ message: "Terjadi kesalahan saat memperbarui Retail." });
   }
 };
 
@@ -153,13 +158,13 @@ exports.delete = async (req, res) => {
       logger.warn(
         `Retail dengan ID ${id} tidak ditemukan oleh user ${salesId}`
       );
-      return res.status(404).send({ message: "Retail tidak ditemukan" });
+      return res.status(404).json({ message: "Retail tidak ditemukan" });
     }
-    res.send({ message: "Retail berhasil dihapus" });
+    res.json({ message: "Retail berhasil dihapus" });
   } catch (err) {
     logger.error(`Error saat menghapus Retail dengan ${err.message}`);
     res
       .status(500)
-      .send({ message: "Terjadi kesalahan saat menghapus Retail." });
+      .json({ message: "Terjadi kesalahan saat menghapus Retail." });
   }
 };

@@ -11,6 +11,7 @@ router.get('/', verifyToken, authorizeRoles('admin'), usersController.getAllUser
 
 
 router.get('/:id', verifyToken, (req, res, next) => {
+    // @ts-ignore
     if (req.user.level === 'admin' || req.user.id.toString() === req.params.id) {
         return next();
     }
