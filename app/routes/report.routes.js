@@ -17,6 +17,6 @@ router.get('/retail', verifyToken, authorizeRoles('svp'), retailReport.retail);
 router.get('/follow-up', verifyToken, authorizeRoles('svp'), followUpReport.reportFollowUp);
 router.get('/sales-performance', verifyToken, authorizeRoles('svp'), salesPerformaceReport.reportSalesPerformance);
 router.get('/evaluation', verifyToken, authorizeRoles('svp'), reportEvaluation.getSalesEvaluationReport);
-router.get('/user', verifyToken, authorizeRoles('svp'), userReport.getUserReport);
+router.get('/users', verifyToken, authorizeRoles('svp'), userReport.getUserReport);
 
 module.exports = router;

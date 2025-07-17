@@ -45,7 +45,7 @@ exports.createProspek = async (req, res) => {
     }
 
     logger.info(
-      `Prospek berhasil dibuat  berhasil diperbarui oleh user ${salesId}`
+      `Prospek berhasil dibuat  berhasil diperbarui oleh user ${salesName}`
     );
     res
       .status(201)

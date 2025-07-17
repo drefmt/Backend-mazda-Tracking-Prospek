@@ -1,12 +1,12 @@
 const db = require("../models");
-const { getDateRange } = require("../utils/dateRange");
+const { getDateRange, getMonthName } = require("../utils/dateRange");
+const moment = require("moment")
 
 const User = db.users;
 const Prospek = db.prospek;
 const TestDrive = db.testDrive;
 const Spk = db.spk;
 const Retail = db.retail;
-
 exports.reportSalesPerformance = async (req, res) => {
   try {
     const { month, year } = req.query;
@@ -50,11 +50,16 @@ exports.reportSalesPerformance = async (req, res) => {
         konversiRetail: retailConvertion.toFixed(2) + "%",
       });
     }
+
+    const generatedBy = req.user?.username || "Unknow"
+    const periodFormatted = moment(startDate).format("MMMM YYYY");
+    
     res.json({
       count: report.length,
+      period: periodFormatted,
+      generatedBy,
       data: report,
-      monthNum,
-      yearNum,
+
     });
 
     }

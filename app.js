@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");    
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
     res.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Credentials", "true");
     next();
@@ -28,6 +28,7 @@ const prospekRoutes = require('./app/routes/prospek.routes');
 const spkRoutes = require('./app/routes/spk.routes');
 const testDriveRoutes = require('./app/routes/testDrive.routes');
 const retailRoutes = require('./app/routes/retail.routes');
+const dailyActivity = require('./app/routes/dailyActivity.routes');
 const notificationRoutes = require('./app/routes/notification.routes');
 const dashboardRoutes = require('./app/routes/dashboard.routes')
 
@@ -40,8 +41,10 @@ app.use('/api/prospek', prospekRoutes);
 app.use('/api/spk', spkRoutes);
 app.use('/api/test-drive', testDriveRoutes);
 app.use('/api/retail', retailRoutes);
-app.use('/api/notification/prospect-reminder', notificationRoutes);
-app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/notification', notificationRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/activity', dailyActivity);
+
 
 // report 
 app.use('/api/report', reportRoutes);

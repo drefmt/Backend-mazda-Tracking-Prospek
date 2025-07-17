@@ -6,44 +6,44 @@ const TestDrive = db.testDrive;
 const Spk = db.spk;
 const Retail = db.retail;
 
-exports.getEvaluationReport = async (req, res) => {
-  try {
-    const { year } = req.query;
+// exports.getEvaluationReport = async (req, res) => {
+//   try {
+//     const { year } = req.query;
 
-    if (!year) {
-      return res.status(400).json({ message: "Year is required." });
-    }
+//     if (!year) {
+//       return res.status(400).json({ message: "Year is required." });
+//     }
 
-    const { startDate, endDate } = getYearRange(year);
+//     const { startDate, endDate } = getYearRange(year);
 
-    const [prospectCount, testDriveCount, spkCount, retailCount] = await Promise.all([
-      Prospek.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
-      TestDrive.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
-      Spk.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
-      Retail.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
-    ]);
+//     const [prospectCount, testDriveCount, spkCount, retailCount] = await Promise.all([
+//       Prospek.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
+//       TestDrive.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
+//       Spk.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
+//       Retail.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } }),
+//     ]);
 
-    const calculateRatio = (value, total) =>
-      total > 0 ? ((value / total) * 100).toFixed(2) + "%" : "0.00%";
+//     const calculateRatio = (value, total) =>
+//       total > 0 ? ((value / total) * 100).toFixed(2) + "%" : "0.00%";
 
-    const evaluationReport = {
-      period: `January - December ${year}`,
-      totalProspects: prospectCount,
-      totalTestDrives: testDriveCount,
-      totalSpks: spkCount,
-      totalRetails: retailCount,
-      testDriveConversion: calculateRatio(testDriveCount, prospectCount),
-      spkConversion: calculateRatio(spkCount, prospectCount),
-      retailConversion: calculateRatio(retailCount, prospectCount),
-    };
+//     const evaluationReport = {
+//       period: `January - December ${year}`,
+//       totalProspects: prospectCount,
+//       totalTestDrives: testDriveCount,
+//       totalSpks: spkCount,
+//       totalRetails: retailCount,
+//       testDriveConversion: calculateRatio(testDriveCount, prospectCount),
+//       spkConversion: calculateRatio(spkCount, prospectCount),
+//       retailConversion: calculateRatio(retailCount, prospectCount),
+//     };
 
-    res.status(200).json(evaluationReport);
+//     res.status(200).json(evaluationReport);
 
-  } catch (error) {
-    console.error("Failed to generate annual sales evaluation report:", error);
-    res.status(500).json({ message: "An error occurred while retrieving the sales evaluation report." });
-  }
-};
+//   } catch (error) {
+//     console.error("Failed to generate annual sales evaluation report:", error);
+//     res.status(500).json({ message: "An error occurred while retrieving the sales evaluation report." });
+//   }
+// };
 
 
 exports.getSalesEvaluationReport = async (req, res) => {
@@ -91,8 +91,11 @@ exports.getSalesEvaluationReport = async (req, res) => {
       });
     }
 
+    const generatedBy = req.user?.username || "Unknow"
     res.status(200).json({
+      count: result.length,
       period: y,
+      generatedBy,
       data: result,
     });
 

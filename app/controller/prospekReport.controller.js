@@ -1,6 +1,7 @@
 const { getDateRange } = require('../utils/dateRange');
 const db = require('../models');
 const Prospek = db.prospek;
+const moment = require('moment')
 
 
 exports.reportProspek = async (req, res) => {
@@ -19,7 +20,8 @@ exports.reportProspek = async (req, res) => {
         $gte: startDate,
         $lte: endDate
       }
-    }).populate("salesId", "username"); // jika ingin nama sales
+    }).populate("salesId", "username")
+      
 
     
      const prospekWithFollowUpCount = prospeks.map((prospek) => {
@@ -28,9 +30,14 @@ exports.reportProspek = async (req, res) => {
       return obj;
     });
 
+      const periodFormatted = moment(startDate).format("MMMM YYYY");
+       const generatedBy = req.user?.username || "Unknown";
+
     res.json({
       count: prospeks.length,
-      data: prospekWithFollowUpCount
+      period: periodFormatted,       
+      generatedBy,                   
+      data: prospekWithFollowUpCount,
     });
   } catch (error) {
     console.error("Gagal ambil report prospek:", error);

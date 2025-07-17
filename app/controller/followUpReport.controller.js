@@ -3,6 +3,7 @@ const logger = require("../utils/logger");
 const db = require("../models");
 const Prospek = db.prospek;
 const { getDateRange } = require("../utils/dateRange");
+const moment = require("moment");
 
 exports.reportFollowUp = async (req, res) => {
   try {
@@ -20,6 +21,8 @@ exports.reportFollowUp = async (req, res) => {
 
     const report = [];
 
+    
+
     for (const prospek of prospeks) {
       const { name, salesId, followUps } = prospek;
 
@@ -28,7 +31,6 @@ exports.reportFollowUp = async (req, res) => {
       );
 
       if (filteredFollowUps.length === 0) continue;
-
 
       const sorted = filteredFollowUps.sort(
         (a, b) => new Date(b.followUpDate) - new Date(a.followUpDate)
@@ -43,12 +45,21 @@ exports.reportFollowUp = async (req, res) => {
         lastFollowUpDate: lastFollowUp.followUpDate,
       });
     }
+
+    const periodFormatted = moment(startDate).format("MMMM YYYY");
+    const generatedBy = req.user?.username || "Unknow";
+
+
     res.json({
       count: report.length,
+      period: periodFormatted,
+      generatedBy,
       data: report,
     });
   } catch (error) {
     logger.error("Gagal ambil laporan ringkasan follow-up:", error);
-    res.status(500).json({ message: "Terjadi kesalahan saat ambil data laporan follow-up" });
+    res
+      .status(500)
+      .json({ message: "Terjadi kesalahan saat ambil data laporan follow-up" });
   }
 };

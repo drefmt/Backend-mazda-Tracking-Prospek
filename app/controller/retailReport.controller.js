@@ -3,7 +3,7 @@ const db = require('../models');
 const Retail = db.retail;
 const logger = require('../utils/logger');
 
-
+const moment = require('moment');
 exports.retail = async(req, res) => {
     try {
         const { month, year } = req.query;
@@ -27,9 +27,16 @@ exports.retail = async(req, res) => {
             select: "name",
           },
         })
-        
+
+
+        const periodFormatted = moment(startDate).format("MMMM YYYY");
+        const generatedBy = req.user?.username || "Unknow"
+            
+
         res.json({
             count: retail.length,
+            period: periodFormatted,
+            generatedBy,
             data: retail,
         });
     } catch (error) {

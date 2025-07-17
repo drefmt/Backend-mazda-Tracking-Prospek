@@ -37,7 +37,7 @@ exports.getYearlyActivity = async(req, res) =>  {
     const { month, limit } = req.query; // month: '2025-07'
     const data = await getTopSalesByRetail(month, parseInt(limit) || 5);
     res.json(data);
-  } catch (err) {
+  } catch (err) { 
     console.error("Top performers error:", err);
     res.status(500).json({ message: "Gagal mengambil data kinerja sales." });
   }
