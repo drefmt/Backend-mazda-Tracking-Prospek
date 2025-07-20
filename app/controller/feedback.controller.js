@@ -31,10 +31,10 @@ exports.createFeedback = async(req, res) => {
     const link = await FeedbackLink.findOne({ token });
 
     if(!link) return res.status(400).json({ message: "Invalid link"});
-    if(!link.used) return res.status(410).json({ message: "link is already used"});
+    if(link.used) return res.status(410).json({ message: "link is already used"});
     if(link.expiredAt < new Date()) return res.status(410).json({message: "link has expired"});
 
-    await Feedback.create({
+    const feedback = await Feedback.create({
         retailId: link.retailId,
         rating,
         message,
@@ -42,29 +42,42 @@ exports.createFeedback = async(req, res) => {
     });
 
     link.used = true;
-    await link.save();
-    link.feedbackId = Feedback.id
+    link.feedbackId = feedback._id
+    await link.save();    
     res.json({message: "Feedback sent successfully"})
 }
 
+exports.getAllFeedback = async (req, res) => {
+  try {
+    const feedbackList = await Feedback.find().populate("retailId",'carType');
+    res.status(200).json(feedbackList);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch feedback", error });
+  }
+};
 
 exports.getAllFeedbackLinks = async(req, res) => {
     try {
-        const link = await FeedbackLink.find()
-        .populate({
-            path: "retailId",
-            populate: {
-                path: "spkId",
-                populate: {
-                    path: "prospekId",
-                    select: "name",
-                },
-            },
-        }).sort({createdAt: -1});
-        res.json(link);
-    } catch (error) {
-        res.status(500).json({message: "Failed to Fetch Feedback link"});
-    }
+    const link = await FeedbackLink.find()
+      .populate({
+    path: "retailId",
+    populate: {
+      path: "spkId",
+      select: "prospekId", // hanya ambil prospekId
+      populate: {
+        path: "prospekId",
+        select: "name", // hanya ambil nama prospek
+      },
+    },
+    select: "spkId carType", // kalau kamu hanya butuh spkId & carType
+  })
+      .populate("feedbackId")
+      .sort({ createdAt: -1 });
+
+    res.json(link);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to Fetch Feedback link" });
+  }
 };
 
 
@@ -81,6 +94,7 @@ exports.getTokenInfo = async (req, res) => {
     message: "Link valid",
     customerName: link.retailId?.customerName ?? "Pelanggan",
     carType: link.retailId?.carType ?? "",
+    linkUse: link.used,
   });
 };
 

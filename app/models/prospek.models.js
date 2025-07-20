@@ -58,8 +58,7 @@ module.exports = (mongoose) => {
       // Predict Score Variable
 
       demografi: {
-        usia: Number,
-        jenisKelamin: { type: String, enum: ["Laki-laki", "Perempuan"] },
+        usia: Number,        
         pekerjaan: String,
         penghasilan: Number,
       },

@@ -1,5 +1,4 @@
 module.exports = (mongoose) => {
-  // models/DailyActivity.js
 
 const dailyActivitySchema = new mongoose.Schema({
   salesId: {
