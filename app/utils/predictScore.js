@@ -91,7 +91,8 @@ function predictScore(prospek) {
   if (score >= 70) category = "Hot";
   else if (score >= 40) category = "Medium";
 
-  return { score, category };
+return { score, category };
+
 }
 
 module.exports = { predictScore };

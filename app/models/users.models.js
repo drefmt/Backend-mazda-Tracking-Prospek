@@ -17,18 +17,21 @@ module.exports = (mongoose) => {
         },
         level: {
             type: String,
-            enum: ["admin", "sales", "svp"],
+            enum: [ "sales", "svp"],
             default: "sales",
             required: true,
         },
     }, { timestamps: true }); 
 
 
-    userSchema.method("toJSON", function () {
-        const { __v, _id, ...object } = this.toObject();
-        object.id = _id;
-        return object;
-      });
+  userSchema.set("toJSON", {
+    virtuals: true,
+    versionKey: false,
+    transform: (_, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
+  });
 
     userSchema.pre("save", async function (next) {
         // @ts-ignore

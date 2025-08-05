@@ -1,3 +1,5 @@
+
+
 module.exports = (mongoose) => {
 
 const dailyActivitySchema = new mongoose.Schema({
@@ -12,7 +14,7 @@ const dailyActivitySchema = new mongoose.Schema({
   },
   activityType: {
     type: String,
-    enum: ['Meeting', 'Follow Up', 'Test Drive', 'Prospecting', 'Admin Work', 'Other'],
+    enum: ['Meeting', 'Follow Up', 'Test Drive', 'Prospecting', 'Admin Work','Other'],
     required: true
   },
   description: {
@@ -34,14 +36,14 @@ const dailyActivitySchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-  dailyActivitySchema.method("toJSON", function () {
-    const { __v, _id, createdAt, updatedAt, ...object } = this.toObject();
-    object.id = _id;
-    object.createdAt = createdAt;
-    object.updatedAt = updatedAt;
-    return object;
+  dailyActivitySchema.set("toJSON", {
+    virtuals: true,
+    versionKey: false,
+    transform: (_, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
   });
-
   const DailyActivity = mongoose.model('DailyActivity', dailyActivitySchema);
   return DailyActivity;
 };

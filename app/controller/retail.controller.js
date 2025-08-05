@@ -43,6 +43,10 @@ exports.create = async (req, res) => {
       status: 'Retail'
     })
 
+    await SPK.findByIdAndUpdate(spkId, {
+      status: "Delivered"
+    })
+
     res.status(201).json({ message: "Retail berhasil ditambahkan", retail });
   } catch (err) {
     logger.error(`Error saat menambahkan Retail: ${err.message}`);

@@ -31,12 +31,13 @@ module.exports = (mongoose) => {
       default: Date.now,
     },
   });
-  feedbackLinkSchema.method("toJSON", function () {
-    const { __v, _id, createdAt, updatedAt, ...object } = this.toObject();
-    object.id = _id;
-    object.createdAt = createdAt;
-    object.updatedAt = updatedAt;
-    return object;
+  feedbackLinkSchema.set("toJSON", {
+    virtuals: true,
+    versionKey: false,
+    transform: (_, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
   });
   const feedbackLink = mongoose.model("FeedbackLink", feedbackLinkSchema);
   return feedbackLink;

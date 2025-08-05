@@ -4,6 +4,8 @@ const logger = require("../utils/logger");
 const User = db.users;
 const SPK = db.spk;
 const Notification = db.notification;
+const { predictScore } = require("../utils/predictScore");
+
 
 exports.createProspek = async (req, res) => {
   try {
@@ -17,8 +19,19 @@ exports.createProspek = async (req, res) => {
       source,
       status,
       carType,
-      category,
+      // category,
+      demografi,
+      psikografis,
+      perilaku,
+      lingkungan,
     } = req.body;
+
+      const { score, category: scoreCategory } = predictScore({
+      demografi,
+      psikografis,
+      perilaku,
+      lingkungan,
+    });
     const newProspek = new Prospek({
       salesId,
       name,
@@ -28,7 +41,13 @@ exports.createProspek = async (req, res) => {
       source,
       status,
       carType,
-      category,
+      // category,
+      demografi,
+      psikografis,
+      perilaku,
+      lingkungan,
+      score,
+      scoreCategory
     });
 
     const prospek = await newProspek.save();
@@ -119,14 +138,39 @@ exports.findProspekById = async (req, res) => {
   }
 };
 
+
 exports.updateProspek = async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
 
+    const {
+      demografi,
+      psikografis,
+      perilaku,
+      lingkungan,
+      ...otherFields
+    } = req.body;
+
+    // Hitung skor baru berdasarkan input terkini
+    const { score, category: scoreCategory } = predictScore({
+      demografi,
+      psikografis,
+      perilaku,
+      lingkungan,
+    });
+
     const updatedProspek = await Prospek.findOneAndUpdate(
       { _id: id, salesId: userId },
-      req.body,
+      {
+        ...otherFields,
+        demografi,
+        psikografis,
+        perilaku,
+        lingkungan,
+        score,
+        scoreCategory,
+      },
       { new: true, runValidators: true }
     );
 

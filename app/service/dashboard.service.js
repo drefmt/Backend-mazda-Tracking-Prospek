@@ -1,9 +1,9 @@
 const db = require("../models");
 const dayjs = require("dayjs");
+const { ObjectId } = require("mongodb");
 const Prospek = db.prospek;
 const SPK = db.spk;
 const TestDrive = db.testDrive;
-
 const Retail = db.retail;
 const {
   getCurrentMonthRange,
@@ -13,22 +13,43 @@ const {
 async function getDashboardSummary(user) {
   const { startDate, endDate } = getCurrentMonthRange();
 
-  const matchCondition = {
-    createdAt: { $gte: startDate, $lte: endDate },
+  // Filter untuk prospek
+  const prospekMatch = {
+    createdAt: { $gte: startDate, $lte: endDate }
   };
 
-  if (user.role === "sales") {
-    matchCondition.salesId = user._id;
+  // Filter untuk test drive
+  const testDriveMatch = {
+    dateTestDrive: { $gte: startDate, $lte: endDate }
+  };
+
+  // Filter untuk SPK
+  const spkMatch = {
+    dateSpk: { $gte: startDate, $lte: endDate }
+  };
+
+  // Filter untuk retail
+  const retailMatch = {
+    dateRetail: { $gte: startDate, $lte: endDate }
+  };
+
+  // Filter role sales
+  if (user.level === "sales") {
+    const salesId = new ObjectId(user._id || user.id);
+    prospekMatch.salesId = salesId;
+    testDriveMatch.salesId = salesId;
+    spkMatch.salesId = salesId;
+    retailMatch.salesId = salesId;
   }
 
   const [totalProspek, totalTestDrive, totalSPK, totalRetail, totalFollowUp] =
     await Promise.all([
-      Prospek.countDocuments(matchCondition),
-      TestDrive.countDocuments(matchCondition),
-      SPK.countDocuments(matchCondition),
-      Retail.countDocuments(matchCondition),
+      Prospek.countDocuments(prospekMatch),
+      TestDrive.countDocuments(testDriveMatch),
+      SPK.countDocuments(spkMatch),
+      Retail.countDocuments(retailMatch),
       Prospek.aggregate([
-        { $match: matchCondition },
+        { $match: prospekMatch },
         { $project: { followUpsCount: { $size: "$followUps" } } },
         { $group: { _id: null, total: { $sum: "$followUpsCount" } } },
       ]),
@@ -66,56 +87,75 @@ async function getConversionFunnel(month, user) {
   return { prospek, testDrive, spk, retail };
 }
 
-function getDailyCountPipeline(match) {
+function getDailyCountPipeline(match, dateField = "createdAt") {
   return [
     { $match: match },
     {
-      $group: {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-        count: { $sum: 1 },
-      },
+      $project: {
+        date: { $dateToString: { format: "%Y-%m-%d", date: `$${dateField}` } }
+      }
     },
+    { $group: { _id: "$date", count: { $sum: 1 } } },
+    { $sort: { _id: 1 } }
   ];
 }
+
 
 async function getDailyActivityByYear(year, user) {
   const startDate = dayjs(`${year}-01-01`).startOf("day").toDate();
   const endDate = dayjs(`${year}-12-31`).endOf("day").toDate();
 
-  const match = { createdAt: { $gte: startDate, $lte: endDate } };
-  if (user.role === "sales") match.salesId = user._id;
+  const baseSalesMatch = {};
+  if (user.level === "sales") {
+    baseSalesMatch.salesId = new ObjectId(user.id);
+  }
 
   const [prospekAgg, testDriveAgg, spkAgg, retailAgg] = await Promise.all([
-    Prospek.aggregate(getDailyCountPipeline(match)),
-    TestDrive.aggregate(getDailyCountPipeline(match)),
-    SPK.aggregate(getDailyCountPipeline(match)),
-    Retail.aggregate(getDailyCountPipeline(match)),
+    Prospek.aggregate(
+      getDailyCountPipeline({
+        ...baseSalesMatch,
+        createdAt: { $gte: startDate, $lte: endDate }
+      })
+    ),
+    TestDrive.aggregate(
+      getDailyCountPipeline({
+        ...baseSalesMatch,
+        dateTestDrive: { $gte: startDate, $lte: endDate }
+      })
+    ),
+    SPK.aggregate(
+      getDailyCountPipeline({
+        ...baseSalesMatch,
+        dateSpk: { $gte: startDate, $lte: endDate }
+      })
+    ),
+    Retail.aggregate(
+      getDailyCountPipeline({
+        ...baseSalesMatch,
+        dateRetail: { $gte: startDate, $lte: endDate }
+      })
+    )
   ]);
 
-  // Gabungkan berdasarkan tanggal
   const activityMap = new Map();
 
   for (const item of prospekAgg) {
     if (!activityMap.has(item._id)) activityMap.set(item._id, {});
     activityMap.get(item._id).prospek = item.count;
   }
-
   for (const item of testDriveAgg) {
     if (!activityMap.has(item._id)) activityMap.set(item._id, {});
     activityMap.get(item._id).testDrive = item.count;
   }
-
   for (const item of spkAgg) {
     if (!activityMap.has(item._id)) activityMap.set(item._id, {});
     activityMap.get(item._id).spk = item.count;
   }
-
   for (const item of retailAgg) {
     if (!activityMap.has(item._id)) activityMap.set(item._id, {});
     activityMap.get(item._id).retail = item.count;
   }
 
-  // Buat array chartData tanpa tanggal yang kosong
   const chartData = Array.from(activityMap.entries()).map(([date, data]) => ({
     date,
     prospek: data.prospek || 0,
@@ -124,7 +164,6 @@ async function getDailyActivityByYear(year, user) {
     retail: data.retail || 0,
   }));
 
-  // Summary
   const summary = {
     prospek: prospekAgg.reduce((sum, item) => sum + item.count, 0),
     testDrive: testDriveAgg.reduce((sum, item) => sum + item.count, 0),
@@ -134,6 +173,7 @@ async function getDailyActivityByYear(year, user) {
 
   return { summary, chartData };
 }
+
 
 async function getTopSalesByRetail(month, limit = 5) {
   const { startDate, endDate } = month

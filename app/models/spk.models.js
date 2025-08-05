@@ -18,40 +18,48 @@ module.exports = (mongoose) => {
       noKtp: {
         type: String,
         required: true,
-      },     
+      },
       cashOrCredit: {
         type: String,
         enum: ["Cash", "Credit"],
         required: true,
       },
       downPayment: {
-        type: Number,        
+        type: Number,
         required: true,
       },
       tenor: {
-        type: String,        
-        required: true,
+        type: String,
       },
       leasing: {
         type: String,
         required: true,
-      },    
+      },
       status: {
         type: String,
         required: true,
-        enum: ["Process Do","Cancel"],
-      },    
+        enum: ["Draft", "Process Do", "Cancel", "Delivered"],
+      },
     },
 
     { timestamps: true }
   );
 
-  spkSchema.method("toJSON", function () {
-    const { __v, _id, createdAt, updatedAt, ...object } = this.toObject();
-    object.id = _id;
-    object.createdAt= createdAt
-    object.updatedAt= updatedAt
-    return object;
+  // spkSchema.method("toJSON", function () {
+  //   const { __v, _id, createdAt, updatedAt, ...object } = this.toObject();
+  //   object.id = _id;
+  //   object.createdAt= createdAt
+  //   object.updatedAt= updatedAt
+  //   return object;
+  // });
+
+  spkSchema.set("toJSON", {
+    virtuals: true,
+    versionKey: false,
+    transform: (_, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
   });
 
   const spk = mongoose.model("Spk", spkSchema);

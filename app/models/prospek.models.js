@@ -28,18 +28,14 @@ module.exports = (mongoose) => {
       },
       status: {
         type: String,
-        enum: ["Prospek", "Test-Drive", "SPK"],
+        enum: ["Prospek", "Test-Drive", "SPK", "Retail"],
         required: true,
       },
       carType: {
         type: String,
         required: true,
       },
-      category: {
-        type: String,
-        required: true,
-        enum: ["Low", "Medium", "Hot"],
-      },
+  
       followUps: [
         {
           followUpDate: { type: Date, required: true },
@@ -58,7 +54,7 @@ module.exports = (mongoose) => {
       // Predict Score Variable
 
       demografi: {
-        usia: Number,        
+        usia: Number,
         pekerjaan: String,
         penghasilan: Number,
       },
@@ -72,19 +68,32 @@ module.exports = (mongoose) => {
         responAwal: String, // contoh: "Cepat", "Lambat"
         interaksiFavorit: String, // contoh: "WhatsApp"
       },
-      lingkungan: {       
+      lingkungan: {
         sumber: String, // contoh: "Teman", "Keluarga", "Iklan"
+      },
+
+      score: {
+        type: Number,
+        default: 0,
+      },
+      
+      scoreCategory: {
+        type: String,
+        enum: ["Low", "Medium", "Hot"],
+        default: "Low",
       },
     },
 
     { timestamps: true }
   );
-  prospekSchema.method("toJSON", function () {
-    const { __v, _id, createdAt, updatedAt, ...object } = this.toObject();
-    object.id = _id;
-    object.createdAt = createdAt;
-    object.updatedAt = updatedAt;
-    return object;
+
+  prospekSchema.set("toJSON", {
+    virtuals: true,
+    versionKey: false,
+    transform: (_, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+    },
   });
 
   const Prospek = mongoose.model("Prospek", prospekSchema);
