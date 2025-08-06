@@ -6,7 +6,6 @@ const SPK = db.spk;
 const Notification = db.notification;
 const { predictScore } = require("../utils/predictScore");
 
-
 exports.createProspek = async (req, res) => {
   try {
     const salesId = req.user.id;
@@ -19,14 +18,13 @@ exports.createProspek = async (req, res) => {
       source,
       status,
       carType,
-      // category,
       demografi,
       psikografis,
       perilaku,
       lingkungan,
     } = req.body;
 
-      const { score, category: scoreCategory } = predictScore({
+    const { score, category: scoreCategory } = predictScore({
       demografi,
       psikografis,
       perilaku,
@@ -41,34 +39,22 @@ exports.createProspek = async (req, res) => {
       source,
       status,
       carType,
-      // category,
       demografi,
       psikografis,
       perilaku,
       lingkungan,
       score,
-      scoreCategory
+      scoreCategory,
     });
-
     const prospek = await newProspek.save();
-    const svp = await User.findOne({ level: "svp" });
-
-    if (svp) {
-      console.log("find supervisor: ", svp.username);
-      await Notification.create({
-        recipientId: svp._id,
-        level: "svp",
-        title: "Prospek Baru",
-        message: `Sales ${salesName} menambahkan - ${prospek.name}`,
-      });
-    }
 
     logger.info(
       `Prospek berhasil dibuat  berhasil diperbarui oleh user ${salesName}`
     );
-    res
-      .status(201)
-      .json({ message: "Prospek berhasil ditambahkan", data: prospek });
+    res.status(201).json({
+      message: "Prospek berhasil ditambahkan",
+      data: prospek,
+    });
   } catch (error) {
     logger.error(`Kesalahan saat membuat prospek: ${error.message}`);
     res.status(500).json({ message: error.message });
@@ -93,9 +79,9 @@ exports.findAllProspek = async (req, res) => {
     }
 
     const prospekWithFollowUpCount = prospeks.map((prospek) => {
-      const obj = prospek.toJSON();
-      obj.followUpCount = prospek.followUps.length;
-      return obj;
+      const object = prospek.toJSON();
+      object.followUpCount = prospek.followUps.length;
+      return object;
     });
 
     logger.info(`Data prospek diambil untuk pengguna ${name}`);
@@ -138,19 +124,13 @@ exports.findProspekById = async (req, res) => {
   }
 };
 
-
 exports.updateProspek = async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
 
-    const {
-      demografi,
-      psikografis,
-      perilaku,
-      lingkungan,
-      ...otherFields
-    } = req.body;
+    const { demografi, psikografis, perilaku, lingkungan, ...otherFields } =
+      req.body;
 
     // Hitung skor baru berdasarkan input terkini
     const { score, category: scoreCategory } = predictScore({
@@ -215,15 +195,12 @@ exports.findAvailableProspekForSpk = async (req, res) => {
   try {
     const useProspekIds = await SPK.find().distinct("prospekId");
 
-
     const availableProspek = await Prospek.find({
       _id: { $nin: useProspekIds },
     }).sort({ createdAt: -1 });
 
-
     res.status(200).json(availableProspek.map((p) => p.toJSON()));
   } catch (err) {
-    
     res.status(500).json({
       message: "Gagal mengambil prospek yang tersedia",
       error: err.message,
@@ -326,11 +303,11 @@ exports.addFollowUp = async (req, res) => {
       console.log("Supervisor ditemukan:", spv.username);
 
       await Notification.create({
-        recipientId: spv._id,
+        recipientId: spv.id,
         level: "svp",
         title: "Follow-Up Baru oleh Sales",
         message: `Sales ${sales} melakukan follow-up untuk ${prospek.name}`,
-        link: `detail/${prospek._id}`,
+        link: `/${spv.level}/prospek/detail/${prospek.id}`,
       });
 
       console.log("✅ Notifikasi untuk SPV berhasil dikirim.");

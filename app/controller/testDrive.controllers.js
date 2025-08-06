@@ -32,16 +32,6 @@ exports.createTestDrive = async (req, res) => {
 
     const testDrive = await newTestDrive.save();
     await testDrive.populate("prospekId", "name");
-    const svp = await User.findOne({ level: "svp" });
-
-    if (svp) {
-      await Notification.create({
-        recipientId: svp._id,
-        level: "svp",
-        title: "Test-Drive Baru",
-        message: `Sales ${salesName} Menjadwalkan Test-Drive untuk ${testDrive.prospekId.name}`,
-      });
-    }
 
     await Prospek.findByIdAndUpdate(prospekId, {
       status: "Test-Drive",

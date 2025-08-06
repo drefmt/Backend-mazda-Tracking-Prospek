@@ -42,17 +42,6 @@ exports.createSpk = async (req, res) => {
 
     const spk = await newSpk.save();
     await spk.populate("prospekId","name");
-    const svp = await User.findOne({ level: 'svp'} );
-    
-
-    if(svp) {
-      await Notification.create({
-        recipientId: svp._id,
-        level: 'svp',
-        title: 'SPK Baru',
-        message: `${salesName} Membuat spk untuk ${spk.prospekId.name}`
-      })
-    }
 
     await Prospek.findByIdAndUpdate( prospekId, {
       status: 'SPK',

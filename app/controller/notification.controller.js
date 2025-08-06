@@ -4,7 +4,7 @@ const Notification = db.notification;
 
 exports.getUserNotifications = async (req, res) => {
     try {
-        const notification = await Notification.find({userId: req.user._id}).sort({createdAt: -1});
+        const notification = await Notification.find({ recipientId: req.user.id }).sort({createdAt: -1});
         res.json(notification)
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve notification' });
@@ -25,7 +25,7 @@ exports.deleteNotification = async (req, res) => {
   try {
     const deleted = await Notification.findOneAndDelete({
       _id: req.params.id,
-      userId: req.user._id, // Supaya hanya user pemilik bisa hapus
+       recipientId: req.user.id, // Supaya hanya user pemilik bisa hapus
     });
 
     if (!deleted) {

@@ -1,6 +1,7 @@
 const schedule = require("node-schedule");
 const db = require("../models");
 const Prospek = db.prospek;
+
 const Notification = db.notification;
 const logger = require("./logger");
 
@@ -29,13 +30,13 @@ const runReminderJob = () => {
     console.log(`[CRON] Jumlah prospect ditemukan: ${prospek.length}`);
 
     for (const p of prospek) {
+      const userRole = p.salesId.level;  
       const existingNotif = await Notification.findOne({
         recipientId: p.salesId._id,
         level: "sales",
         title: `Jangan lupa follow-up ${p.name}!`,
         message: `${p.name} sedang menunggu kabar dari Anda hari ini.`,
-         link: `detail/${p._id}`,
-
+         link: `/${userRole}/prospek/detail/${p._id}`,
         createdAt: {
           $gte: start,
           $lte: end,
@@ -48,7 +49,7 @@ const runReminderJob = () => {
           level: "sales",
           title: `Jangan lupa follow-up ${p.name}!`,
           message: `${p.name} sedang menunggu kabar dari Anda hari ini.`,
-          link: `detail/${p._id}`,
+          link: `/${userRole}/prospek/detail/${p._id}`,
         });
 
         logger.info(

@@ -20,23 +20,6 @@ exports.create = async (req, res) => {
       carType,
     });
     const retail = await newRetail.save();
-
-    const svp = await User.findOne({ level: "svp" });
-    const populatedRetail = await Retail.findById(retail._id).populate({
-      path: "spkId",
-      populate: { path: "prospekId", select: "name" },
-    });
-
-    const prospekName = populatedRetail?.spkId?.prospekId?.name || "Prospek Tidak Diketahui";
-
-    if (svp) {
-      await Notification.create({
-        recipientId: svp._id,
-        level: "svp",
-        title: "Penjualan Selesai",
-        message: `${salesName} menyelesaikan penjualan untuk ${prospekName}`,
-      });
-    }
     const spk = await SPK.findById(spkId) 
 
     await Prospek.findByIdAndUpdate(spk.prospekId, {
