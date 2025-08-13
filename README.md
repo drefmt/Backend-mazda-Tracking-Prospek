@@ -6,7 +6,6 @@ Backend untuk aplikasi **Tracking Prospek** menggunakan **Express.js + MongoDB**
 
 
 ## 📦 Requirements
-Sebelum menjalankan aplikasi ini, pastikan sudah terpasang:
 - Node.js v22.14.0 + Express.js
 - MongoDB v6.0.16+ Mongoose
 - JWT (JSON Web Token) untuk autentikasi
