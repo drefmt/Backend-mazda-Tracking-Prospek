@@ -7,18 +7,17 @@ const { verifyToken, authorizeRoles } = require('../middleware/auth.middleware')
 router.post('/register', usersController.register);
 router.post('/login', usersController.login);
 
-router.get('/', verifyToken, authorizeRoles('admin'), usersController.getAllUsers);
+router.get('/', verifyToken, authorizeRoles('svp'), usersController.getAllUsers);
 
 
 router.get('/:id', verifyToken, (req, res, next) => {
-    // @ts-ignore
-    if (req.user.level === 'admin' || req.user.id.toString() === req.params.id) {
+    if (req.user.level === 'svp' || req.user.id.toString() === req.params.id) {
         return next();
     }
     return res.status(403).json({ message: 'Access denied' });
 }, usersController.getUserById);
 
 router.put('/:id', verifyToken, usersController.updateUser);
-router.delete('/:id', verifyToken, authorizeRoles('admin'), usersController.deleteUser);
+router.delete('/:id', verifyToken, authorizeRoles('svp'), usersController.deleteUser);
 
 module.exports = router;
